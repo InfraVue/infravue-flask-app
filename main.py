@@ -22,4 +22,6 @@ def upload_file():
     file.save(filepath)
     return render_template('result.html', image_url='/' + filepath)
 
-app.run(host='0.0.0.0', port=81)
+import os
+port = int(os.environ.get('PORT', 5000))
+app.run(host='0.0.0.0', port=port)
