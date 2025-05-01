@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Upload Drone Image</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <form action="/upload" method="post" enctype="multipart/form-data">
+    <h2>Upload Drone Image</h2>
+
+    <label for="project">Project Name:</label>
+    <input type="text" id="project" name="project" placeholder="e.g., Bridge Inspection">
+
+    <label for="image">Select Image:</label>
+    <input type="file" id="image" name="image" accept="image/*">
+
+    <button type="submit">Upload</button>
+  </form>
+</body>
+</html>
