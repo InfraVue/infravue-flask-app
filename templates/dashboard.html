@@ -20,12 +20,15 @@
 <body>
   <h1>Dashboard - Processed Images</h1>
   <div class="gallery">
-    {% for image in images %}
-      <a href="{{ image }}" target="_blank">
-        <img src="{{ image }}" alt="Processed Image">
+  {% for image in images %}
+    <div style="text-align: center;">
+      <a href="{{ image.url }}" target="_blank">
+        <img src="{{ image.url }}" alt="Processed Image">
       </a>
-    {% endfor %}
-  </div>
+      <p>{{ image.project }}</p>
+    </div>
+  {% endfor %}
+</div>
   <br>
   <a href="/">Upload Another Image</a>
 </body>
