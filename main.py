@@ -51,6 +51,22 @@ def dashboard():
 
     return render_template('dashboard.html', images=image_items, last_updated=last_updated)
 
+from flask import request, redirect, url_for
+
+@app.route('/upload_image', methods=['POST'])
+def upload_image():
+    if 'image' not in request.files:
+        return 'No image part'
+
+    file = request.files['image']
+    if file.filename == '':
+        return 'No selected file'
+
+    image_folder = 'static/uploads'
+    file.save(os.path.join(image_folder, file.filename))
+
+    return redirect(url_for('dashboard'))
+
 import os
 port = int(os.environ.get('PORT', 5000))
 app.run(host='0.0.0.0', port=port)
