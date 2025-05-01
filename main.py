@@ -22,15 +22,30 @@ def upload_file():
     file.save(filepath)
     return render_template('result.html', image_url='/' + filepath)
 
+import json
+
 @app.route('/dashboard')
 def dashboard():
     image_folder = 'static/uploads'
-    if not os.path.exists(image_folder):
-        image_files = []
-    else:
+    image_files = []
+    image_data = {}
+
+    if os.path.exists(image_folder):
         image_files = os.listdir(image_folder)
-    image_urls = [f'/{image_folder}/{file}' for file in image_files if file.lower().endswith(('.jpg', '.jpeg', '.png'))]
-    return render_template('dashboard.html', images=image_urls)
+
+    # Load project names from JSON
+    if os.path.exists('image_data.json'):
+        with open('image_data.json', 'r') as f:
+            image_data = json.load(f)
+
+    image_items = []
+    for file in image_files:
+        if file.lower().endswith(('.jpg', '.jpeg', '.png')):
+            image_url = f'/{image_folder}/{file}'
+            project_name = image_data.get(file, 'No Project Name')
+            image_items.append({'url': image_url, 'project': project_name})
+
+    return render_template('dashboard.html', images=image_items)
 
 import os
 port = int(os.environ.get('PORT', 5000))
