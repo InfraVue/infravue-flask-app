@@ -20,6 +20,11 @@
 </head>
 <body>
   <h1>Dashboard - Processed Images</h1>
+  <h2>Upload a new processed image:</h2>
+<form action="/upload_image" method="post" enctype="multipart/form-data">
+  <input type="file" name="image" required>
+  <button type="submit">Upload</button>
+</form>
   <div class="gallery">
   {% for image in images %}
     <div style="text-align: center;">
