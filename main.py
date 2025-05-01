@@ -25,7 +25,10 @@ def upload_file():
 @app.route('/dashboard')
 def dashboard():
     image_folder = 'static/uploads'
-    image_files = os.listdir(image_folder)
+    if not os.path.exists(image_folder):
+        image_files = []
+    else:
+        image_files = os.listdir(image_folder)
     image_urls = [f'/{image_folder}/{file}' for file in image_files if file.lower().endswith(('.jpg', '.jpeg', '.png'))]
     return render_template('dashboard.html', images=image_urls)
 
