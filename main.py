@@ -22,6 +22,13 @@ def upload_file():
     file.save(filepath)
     return render_template('result.html', image_url='/' + filepath)
 
+@app.route('/dashboard')
+def dashboard():
+    image_folder = 'static/uploads'
+    image_files = os.listdir(image_folder)
+    image_urls = [f'/{image_folder}/{file}' for file in image_files if file.lower().endswith(('.jpg', '.jpeg', '.png'))]
+    return render_template('dashboard.html', images=image_urls)
+
 import os
 port = int(os.environ.get('PORT', 5000))
 app.run(host='0.0.0.0', port=port)
