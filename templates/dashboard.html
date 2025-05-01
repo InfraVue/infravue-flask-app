@@ -1,1 +1,32 @@
-
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard - Processed Images</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <style>
+    .gallery {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    .gallery img {
+      width: 200px;
+      height: auto;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Dashboard - Processed Images</h1>
+  <div class="gallery">
+    {% for image in images %}
+      <a href="{{ image }}" target="_blank">
+        <img src="{{ image }}" alt="Processed Image">
+      </a>
+    {% endfor %}
+  </div>
+  <br>
+  <a href="/">Upload Another Image</a>
+</body>
+</html>
