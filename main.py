@@ -1,3 +1,4 @@
+from models import db, User
 from flask import Flask, render_template, request
 import os
 
