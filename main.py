@@ -3,6 +3,7 @@ from flask import Flask, render_template, request
 import os
 
 app = Flask(__name__)
+db.init_app(app)
 UPLOAD_FOLDER = 'static/uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
