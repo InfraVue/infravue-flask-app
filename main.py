@@ -53,9 +53,9 @@ def create_app():
     @app.route('/projects')
     @login_required
     def projects():
-    projects = [
-        {'name': 'Project A', 'description': 'Description of Project A'},
-        {'name': 'Project B', 'description': 'Description of Project B'}
+        projects = [
+            {'name': 'Project A', 'description': 'Description of Project A'},
+            {'name': 'Project B', 'description': 'Description of Project B'}
     ]
     return render_template('projects.html', projects=projects)
 
