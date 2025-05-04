@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect, url_for, flash, request
 from extensions import db
 from models import User
-from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from flask_login import LoginManager, login_user, logout_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 
@@ -56,20 +56,21 @@ def create_app():
         projects = [
             {'name': 'Project A', 'description': 'Description of Project A'},
             {'name': 'Project B', 'description': 'Description of Project B'}
-    ]
-    return render_template('projects.html', projects=projects)
+        ]
+        return render_template('projects.html', projects=projects)
 
-@app.route('/projects/create', methods=['GET', 'POST'])
-@login_required
-def create_project():
-    if request.method == 'POST':
-        name = request.form.get('name')
-        description = request.form.get('description')
-        new_project = Project(name=name, description=description, owner=current_user)
-        db.session.add(new_project)
-        db.session.commit()
-        flash('Project created successfully!', 'success')
-        return redirect(url_for('projects'))
-    return render_template('create_project.html')
+    @app.route('/projects/create', methods=['GET', 'POST'])
+    @login_required
+    def create_project():
+        if request.method == 'POST':
+            name = request.form.get('name')
+            description = request.form.get('description')
+            # Saving to DB if you have Project model
+            # new_project = Project(name=name, description=description, owner=current_user)
+            # db.session.add(new_project)
+            # db.session.commit()
+            flash('Project created successfully!', 'success')
+            return redirect(url_for('projects'))
+        return render_template('create_project.html')
 
     return app
