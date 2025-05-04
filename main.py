@@ -57,7 +57,6 @@ def create_app():
         {'name': 'Project A', 'description': 'Description of Project A'},
         {'name': 'Project B', 'description': 'Description of Project B'}
     ]
-
     return render_template('projects.html', projects=projects)
 
 @app.route('/projects/create', methods=['GET', 'POST'])
