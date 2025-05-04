@@ -52,7 +52,6 @@ def create_app():
 
     @app.route('/projects')
 @login_required
-
     def projects():
     projects = [
         {'name': 'Project A', 'description': 'Description of Project A'},
