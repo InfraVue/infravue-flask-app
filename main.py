@@ -51,7 +51,7 @@ def create_app():
         return redirect(url_for('login'))
 
     @app.route('/projects')
-@login_required
+    @login_required
     def projects():
     projects = [
         {'name': 'Project A', 'description': 'Description of Project A'},
