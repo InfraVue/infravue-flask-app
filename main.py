@@ -148,3 +148,8 @@ def dashboard():
 def logout():
     logout_user()
     return redirect(url_for('login'))
+
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    return f"Hello, {current_user.username}! Welcome to your dashboard."
