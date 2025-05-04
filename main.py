@@ -50,4 +50,23 @@ def create_app():
         logout_user()
         return redirect(url_for('login'))
 
+    @app.route('/projects')
+@login_required
+def projects():
+    user_projects = current_user.projects
+    return render_template('projects.html', projects=user_projects)
+
+@app.route('/projects/create', methods=['GET', 'POST'])
+@login_required
+def create_project():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        description = request.form.get('description')
+        new_project = Project(name=name, description=description, owner=current_user)
+        db.session.add(new_project)
+        db.session.commit()
+        flash('Project created successfully!', 'success')
+        return redirect(url_for('projects'))
+    return render_template('create_project.html')
+
     return app
