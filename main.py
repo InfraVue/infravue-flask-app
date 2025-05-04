@@ -52,9 +52,14 @@ def create_app():
 
     @app.route('/projects')
 @login_required
-def projects():
 
-    return render_template('projects.html')
+    def projects():
+    projects = [
+        {'name': 'Project A', 'description': 'Description of Project A'},
+        {'name': 'Project B', 'description': 'Description of Project B'}
+    ]
+
+    return render_template('projects.html', projects=projects)
 
 @app.route('/projects/create', methods=['GET', 'POST'])
 @login_required
