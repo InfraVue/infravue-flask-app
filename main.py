@@ -153,3 +153,13 @@ def logout():
 @login_required
 def dashboard():
     return f"Hello, {current_user.username}! Welcome to your dashboard."
+
+from models import db
+
+def create_app():
+    app = Flask(__name__)
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///your.db'
+    db.init_app(app)
+    return app
+
+app = create_app()
