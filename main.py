@@ -53,8 +53,8 @@ def create_app():
     @app.route('/projects')
 @login_required
 def projects():
-    user_projects = current_user.projects
-    return render_template('projects.html', projects=user_projects)
+
+    return render_template('projects.html')
 
 @app.route('/projects/create', methods=['GET', 'POST'])
 @login_required
