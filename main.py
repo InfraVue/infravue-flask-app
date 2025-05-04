@@ -1,52 +1,58 @@
 from flask import Flask, render_template, redirect, url_for, flash, request
-from extensions import db
+from extensions import db, login_manager
 from models import User
-from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import login_user, logout_user, login_required, current_user
 import os
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'supersecretkey'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///infravue.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+def create_app():
+    app = Flask(__name__)
+    app.config['SECRET_KEY'] = 'supersecretkey'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///infravue.db'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-login_manager = LoginManager(app)
-login_manager.login_view = 'login'
+    db.init_app(app)
+    login_manager.init_app(app)
+    login_manager.login_view = 'login'
 
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
 
-@app.route('/')
-def home():
-    return render_template('upload.html')
+    @app.route('/')
+    def home():
+        return render_template('upload.html')
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
+    @app.route('/login', methods=['GET', 'POST'])
+    def login():
+        if request.method == 'POST':
+            username = request.form.get('username')
+            password = request.form.get('password')
 
-        user = User.query.filter_by(username=username).first()
-        if user and user.check_password(password):
-            login_user(user)
-            flash('Logged in successfully!', 'success')
-            return redirect(url_for('dashboard'))
-        else:
-            flash('Invalid username or password', 'danger')
-    return render_template('login.html')
+            user = User.query.filter_by(username=username).first()
+            if user and user.check_password(password):
+                login_user(user)
+                flash('Logged in successfully!', 'success')
+                return redirect(url_for('dashboard'))
+            else:
+                flash('Invalid username or password', 'danger')
+        return render_template('login.html')
 
-@app.route('/dashboard')
-@login_required
-def dashboard():
-    return f"Hello, {current_user.username}! Welcome to your dashboard."
+    @app.route('/dashboard')
+    @login_required
+    def dashboard():
+        return f"Hello, {current_user.username}! Welcome to your dashboard."
 
-@app.route('/logout')
-@login_required
-def logout():
-    logout_user()
-    return redirect(url_for('login'))
+    @app.route('/logout')
+    @login_required
+    def logout():
+        logout_user()
+        flash('Logged out successfully.', 'info')
+        return redirect(url_for('login'))
 
+    return app
+
+# Entry point
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
+    app = create_app()
     app.run(host='0.0.0.0', port=port)
