@@ -1,7 +1,14 @@
 <h1>Your Projects</h1>
 <ul>
     {% for project in projects %}
-        <li><strong>{{ project.name }}</strong>: {{ project.description }}</li>
+        <li>
+            <strong>{{ project.name }}</strong>: {{ project.description }}
+            <div>
+                {% for image in project.images %}
+                    <img src="{{ url_for('static', filename='uploads/' + image) }}" alt="{{ image }}" style="width: 150px; height: auto; margin: 5px;">
+                {% endfor %}
+            </div>
+        </li>
     {% else %}
         <li>No projects found</li>
     {% endfor %}
