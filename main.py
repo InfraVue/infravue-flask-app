@@ -1,8 +1,9 @@
 from flask import Flask, render_template, redirect, url_for, flash, request
 from extensions import db
-from models import User
-from flask_login import LoginManager, login_user, logout_user, login_required, logout_user, current_user
+from models import User, Project, Image  # Assuming you have Project and Image models
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 import os
 
 def create_app():
@@ -53,10 +54,7 @@ def create_app():
     @app.route('/projects')
     @login_required
     def projects():
-        projects = [
-            {'name': 'Project A', 'description': 'Description of Project A'},
-            {'name': 'Project B', 'description': 'Description of Project B'}
-        ]
+        projects = Project.query.all()  # replace with dummy list if Project model missing
         return render_template('projects.html', projects=projects)
 
     @app.route('/projects/create', methods=['GET', 'POST'])
@@ -65,39 +63,39 @@ def create_app():
         if request.method == 'POST':
             name = request.form.get('name')
             description = request.form.get('description')
-            # Saving to DB if you have Project model
-            # new_project = Project(name=name, description=description, owner=current_user)
-            # db.session.add(new_project)
-            # db.session.commit()
+            new_project = Project(name=name, description=description, owner_id=current_user.id)
+            db.session.add(new_project)
+            db.session.commit()
             flash('Project created successfully!', 'success')
             return redirect(url_for('projects'))
         return render_template('create_project.html')
 
     @app.route('/projects/<int:project_id>')
-@login_required
-def project_dashboard(project_id):
-    project = Project.query.get_or_404(project_id)
-    return render_template('project_dashboard.html', project=project)
+    @login_required
+    def project_dashboard(project_id):
+        project = Project.query.get_or_404(project_id)
+        images = Image.query.filter_by(project_id=project.id).all()
+        return render_template('project_dashboard.html', project=project, images=images)
 
-@app.route('/projects/<int:project_id>/upload', methods=['GET', 'POST'])
-@login_required
-def upload_image(project_id):
-    project = Project.query.get_or_404(project_id)
-    if request.method == 'POST':
-        if 'image' in request.files:
-            image_file = request.files['image']
-            filename = secure_filename(image_file.filename)
-            folder = os.path.join('static/uploads', str(project_id))
-            os.makedirs(folder, exist_ok=True)
-            image_path = os.path.join(folder, filename)
-            image_file.save(image_path)
+    @app.route('/projects/<int:project_id>/upload', methods=['GET', 'POST'])
+    @login_required
+    def upload_image(project_id):
+        project = Project.query.get_or_404(project_id)
+        if request.method == 'POST':
+            if 'image' in request.files:
+                image_file = request.files['image']
+                filename = secure_filename(image_file.filename)
+                folder = os.path.join(app.root_path, 'static', 'uploads', str(project_id))
+                os.makedirs(folder, exist_ok=True)
+                image_path = os.path.join(folder, filename)
+                image_file.save(image_path)
 
-            new_image = Image(filename=filename, project=project)
-            db.session.add(new_image)
-            db.session.commit()
+                new_image = Image(filename=filename, project_id=project.id)
+                db.session.add(new_image)
+                db.session.commit()
 
-            flash('Image uploaded!', 'success')
-            return redirect(url_for('project_dashboard', project_id=project_id))
-    return render_template('upload_image.html', project=project)
+                flash('Image uploaded!', 'success')
+                return redirect(url_for('project_dashboard', project_id=project_id))
+        return render_template('upload_image.html', project=project)
 
     return app
