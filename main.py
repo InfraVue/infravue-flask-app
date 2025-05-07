@@ -57,8 +57,8 @@ def create_app():
     @app.route('/projects')
     @login_required
     def projects():
-        projects = Project.query.all()  # replace with dummy list if Project model missing
-        return render_template('projects.html', projects=projects)
+       user_projects = Project.query.filter_by(user_id=current_user.id).all()
+    return render_template('projects.html', projects=user_projects)
 
     @app.route('/projects/create', methods=['GET', 'POST'])
     @login_required
