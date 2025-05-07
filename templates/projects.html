@@ -1,16 +1,43 @@
-<h1>Your Projects</h1>
-<ul>
-    {% for project in projects %}
-        <li>
-            <strong>{{ project.name }}</strong>: {{ project.description }}
-            <div>
-                {% for image in project.images %}
-                    <img src="{{ url_for('static', filename='uploads/' + image) }}" alt="{{ image }}" style="width: 150px; height: auto; margin: 5px;">
-                {% endfor %}
-            </div>
-        </li>
-    {% else %}
-        <li>No projects found</li>
-    {% endfor %}
-</ul>
-<a href="{{ url_for('create_project') }}">Create New Project</a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Projects</title>
+    <style>
+        img {
+            width: 150px;
+            height: auto;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 4px;
+        }
+        .project {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Your Projects</h1>
+    <ul>
+        {% for project in projects %}
+            <li class="project">
+                <strong>{{ project.name }}</strong>: {{ project.description }}
+                <div>
+                    {% if project.images %}
+                        {% for image in project.images %}
+                            <img src="{{ url_for('static', filename='uploads/' + image.filename) }}" alt="{{ image.filename }}">
+                        {% endfor %}
+                    {% else %}
+                        <p>No images uploaded for this project.</p>
+                    {% endif %}
+                </div>
+            </li>
+        {% else %}
+            <li>No projects found.</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{{ url_for('create_project') }}">Create New Project</a>
+</body>
+</html>
