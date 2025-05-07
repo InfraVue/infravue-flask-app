@@ -1,75 +1,63 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Dashboard - {{ user.username }}</title>
-  <meta http-equiv="refresh" content="30">
-  <link rel="stylesheet" href="/static/style.css">
-  <style>
-    .gallery {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-    }
-    .gallery img {
-      width: 200px;
-      height: auto;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-    }
-    .image-actions button {
-      margin: 5px;
-    }
-  </style>
+    <title>{{ user.username }}'s Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .gallery { display: flex; flex-wrap: wrap; gap: 15px; }
+        .gallery img { width: 200px; height: auto; border: 1px solid #ccc; border-radius: 8px; }
+    </style>
 </head>
 <body>
-  <h1>Welcome, {{ user.username }}!</h1>
+    <h1>Welcome, {{ user.username }}!</h1>
+    <p>Select a project to view or upload images:</p>
 
-  <h2>Your Uploaded Images</h2>
-  {% if images %}
-  <div class="gallery">
-    {% for image in images %}
-      <div style="text-align: center;">
-        <a href="{{ url_for('static', filename='uploads/' + str(image.project_id) + '/' + image.filename) }}" target="_blank">
-          <img src="{{ url_for('static', filename='uploads/' + str(image.project_id) + '/' + image.filename) }}" alt="Image {{ loop.index }}">
-        </a>
-        <p>Project: {{ image.project.name }}</p>
-        <div class="image-actions">
-          <form action="{{ url_for('edit_image', image_id=image.id) }}" method="post" style="display:inline;">
-            <input type="text" name="new_filename" placeholder="New filename" required>
-            <button type="submit">Rename</button>
-          </form>
-          <form action="{{ url_for('delete_image', image_id=image.id) }}" method="post" style="display:inline;">
-            <button type="submit" onclick="return confirm('Are you sure?')">Delete</button>
-          </form>
-        </div>
-      </div>
-    {% endfor %}
-  </div>
-  {% else %}
-    <p>You haven't uploaded any images yet.</p>
-  {% endif %}
+    <!-- Project selection dropdown -->
+    <form action="{{ url_for('upload_image_for_dashboard') }}" method="post" enctype="multipart/form-data">
+        <label for="project_id">Choose Project:</label>
+        <select name="project_id" id="project_id" required>
+            {% for project in projects %}
+                <option value="{{ project.id }}">{{ project.name }}</option>
+            {% endfor %}
+        </select>
 
-  <h2>Upload a New Image</h2>
-  <form action="{{ url_for('upload_image_for_dashboard') }}" method="post" enctype="multipart/form-data">
-    <label for="project">Select Project:</label>
-    <select name="project_id" id="project" required>
-      {% for project in projects %}
-        <option value="{{ project.id }}">{{ project.name }}</option>
-      {% endfor %}
-    </select>
-    <br><br>
-    <input type="file" name="image" required>
-    <button type="submit">Upload</button>
-  </form>
+        <input type="file" name="image" required>
+        <button type="submit">Upload Image</button>
+    </form>
 
-  <h2>Create a New Project</h2>
-  <form action="{{ url_for('create_project_inline') }}" method="post">
-    <input type="text" name="name" placeholder="Project name" required>
-    <input type="text" name="description" placeholder="Description (optional)">
-    <button type="submit">Create Project</button>
-  </form>
+    <!-- Inline project creation -->
+    <h3>Create New Project</h3>
+    <form action="{{ url_for('create_project') }}" method="post">
+        <input type="text" name="name" placeholder="Project Name" required>
+        <input type="text" name="description" placeholder="Description">
+        <button type="submit">Create Project</button>
+    </form>
 
-  <br>
-  <a href="{{ url_for('logout') }}">Logout</a>
+    <h2>Uploaded Images</h2>
+    <div class="gallery">
+        {% for image in images %}
+            <div style="text-align: center;">
+                <a href="{{ url_for('static', filename='uploads/' + str(image.project_id) + '/' + image.filename) }}" target="_blank">
+                    <img src="{{ url_for('static', filename='uploads/' + str(image.project_id) + '/' + image.filename) }}" alt="{{ image.filename }}">
+                </a>
+                <p>{{ image.filename }} (Project ID: {{ image.project_id }})</p>
+
+                <!-- Edit form -->
+                <form action="{{ url_for('edit_image', image_id=image.id) }}" method="post" style="display:inline;">
+                    <input type="text" name="new_filename" placeholder="New filename" required>
+                    <button type="submit">Rename</button>
+                </form>
+
+                <!-- Delete form -->
+                <form action="{{ url_for('delete_image', image_id=image.id) }}" method="post" style="display:inline;">
+                    <button type="submit" onclick="return confirm('Are you sure you want to delete this image?')">Delete</button>
+                </form>
+            </div>
+        {% else %}
+            <p>No images uploaded yet.</p>
+        {% endfor %}
+    </div>
+
+    <br><a href="{{ url_for('logout') }}">Logout</a>
 </body>
 </html>
