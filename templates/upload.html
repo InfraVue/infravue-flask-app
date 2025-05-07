@@ -1,20 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Upload Drone Image</title>
-  <link rel="stylesheet" href="/static/style.css">
+    <meta charset="UTF-8">
+    <title>Upload Image for {{ project.name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-  <form action="/upload" method="post" enctype="multipart/form-data">
-    <h2>Upload Drone Image</h2>
+    <h2>Upload Image for Project: {{ project.name }}</h2>
 
-    <label for="project">Project Name:</label>
-    <input type="text" id="project" name="project" placeholder="e.g., Bridge Inspection">
+    <form method="POST" enctype="multipart/form-data">
+        <label for="image">Select Image:</label>
+        <input type="file" id="image" name="image" accept="image/*" required>
 
-    <label for="image">Select Image:</label>
-    <input type="file" id="image" name="image" accept="image/*">
+        <button type="submit">Upload</button>
+    </form>
 
-    <button type="submit">Upload</button>
-  </form>
+    <br>
+    <a href="{{ url_for('project_dashboard', project_id=project.id) }}">Back to Project Dashboard</a>
 </body>
 </html>
