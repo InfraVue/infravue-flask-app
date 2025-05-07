@@ -101,4 +101,19 @@ def create_app():
                 return redirect(url_for('project_dashboard', project_id=project_id))
         return render_template('upload_image.html', project=project)
 
+    @app.route('/upload', methods=['GET', 'POST'])
+    @login_required
+    def upload():
+        if request.method == 'POST':
+            if 'image' in request.files:
+                image_file = request.files['image']
+                filename = secure_filename(image_file.filename)
+                folder = os.path.join('static/uploads')
+                os.makedirs(folder, exist_ok=True)
+                image_path = os.path.join(folder, filename)
+                image_file.save(image_path)
+                flash('Image uploaded!', 'success')
+                    return redirect(url_for('dashboard'))
+        return render_template('upload.html')
+
     return app
