@@ -49,7 +49,10 @@ def create_app():
     @app.route('/dashboard')
     @login_required
     def dashboard():
-        return f"Hello, {current_user.username}! Welcome to your dashboard."
+        user_projects = Project.query.filter_by(user_id=current_user.id).all()
+        project_ids = [p.id for p in user_projects]
+        images = Image.query.filter(Image.project_id.in_(project_ids)).all()
+        return render_template('dashboard.html', images=images, user=current_user)
 
     # Logout
     @app.route('/logout')
