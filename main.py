@@ -112,4 +112,26 @@ def create_app():
             return redirect(url_for('project_dashboard', project_id=project_id))
         return render_template('upload_image.html', project=project)
 
+    @app.route('/dashboard/upload', methods=['POST'])
+    @login_required
+    def upload_image_for_dashboard():
+        project_id = request.form.get('project_id')
+        project = Project.query.filter_by(id=project_id, user_id=current_user.id).first_or_404()
+
+        if 'image' in request.files:
+            image_file = request.files['image']
+            filename = secure_filename(image_file.filename)
+            folder = os.path.join(app.root_path, 'static', 'uploads', str(project.id))
+            os.makedirs(folder, exist_ok=True)
+            image_path = os.path.join(folder, filename)
+            image_file.save(image_path)
+
+            new_image = Image(filename=filename, project_id=project.id)
+            db.session.add(new_image)
+            db.session.commit()
+
+            flash('Image uploaded successfully!', 'success')
+
+        return redirect(url_for('dashboard'))
+
     return app  # ✅ must be at the END of create_app
