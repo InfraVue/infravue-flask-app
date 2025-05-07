@@ -52,7 +52,7 @@ def create_app():
         user_projects = Project.query.filter_by(user_id=current_user.id).all()
         project_ids = [p.id for p in user_projects]
         images = Image.query.filter(Image.project_id.in_(project_ids)).all()
-        return render_template('dashboard.html', images=images, user=current_user)
+        return render_template('dashboard.html', images=images, user=current_user, projects=user_projects)
 
     # Logout
     @app.route('/logout')
