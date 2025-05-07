@@ -1,15 +1,60 @@
-<!-- templates/project_dashboard.html -->
-<h1>{{ project.name }}</h1>
-<p>{{ project.description }}</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ project.name }} - Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .image-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .image-grid img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border: 1px solid #ccc;
+            padding: 4px;
+            background: #fafafa;
+        }
+        .nav-links {
+            margin-top: 20px;
+        }
+        .nav-links a {
+            margin-right: 15px;
+            text-decoration: none;
+            color: #007bff;
+        }
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>{{ project.name }}</h1>
+    <p>{{ project.description }}</p>
 
-<h2>Images</h2>
-{% if project.images %}
-    {% for image in project.images %}
-        <img src="{{ url_for('static', filename='uploads/' + str(project.id) + '/' + image.filename) }}" width="150" height="150">
-    {% endfor %}
-{% else %}
-    <p>No images uploaded yet.</p>
-{% endif %}
+    <h2>Uploaded Images</h2>
+    {% if project.images %}
+        <div class="image-grid">
+            {% for image in project.images %}
+                <img src="{{ url_for('static', filename='uploads/' + str(project.id) + '/' + image.filename) }}" alt="Image {{ loop.index }}">
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No images uploaded yet for this project.</p>
+    {% endif %}
 
-<a href="{{ url_for('upload_image', project_id=project.id) }}">Upload Image</a>
-<a href="{{ url_for('projects') }}">Back to Projects</a>
+    <div class="nav-links">
+        <a href="{{ url_for('upload_image', project_id=project.id) }}">Upload New Image</a>
+        <a href="{{ url_for('projects') }}">Back to Projects</a>
+    </div>
+</body>
+</html>
