@@ -66,7 +66,7 @@ def create_app():
         if request.method == 'POST':
             name = request.form.get('name')
             description = request.form.get('description')
-            new_project = Project(name=name, description=description, owner_id=current_user.id)
+            new_project = Project(name=name, description=description, user_id=current_user.id)
             db.session.add(new_project)
             db.session.commit()
             flash('Project created successfully!', 'success')
