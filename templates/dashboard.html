@@ -37,8 +37,20 @@
     <p>You haven't uploaded any images yet.</p>
   {% endif %}
 
+  <h2>Upload a New Image</h2>
+  <form action="{{ url_for('upload_image_for_dashboard') }}" method="post" enctype="multipart/form-data">
+    <label for="project">Select Project:</label>
+    <select name="project_id" id="project" required>
+      {% for project in projects %}
+        <option value="{{ project.id }}">{{ project.name }}</option>
+      {% endfor %}
+    </select>
+    <br><br>
+    <input type="file" name="image" required>
+    <button type="submit">Upload</button>
+  </form>
+
   <br>
-  <a href="{{ url_for('upload_image', project_id=user.projects[0].id if user.projects else 0) }}">Upload a New Image</a> |
   <a href="{{ url_for('logout') }}">Logout</a>
 </body>
 </html>
