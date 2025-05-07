@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Dashboard - Processed Images</title>
   <meta http-equiv="refresh" content="30">
-  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <style>
     .gallery {
       display: flex;
@@ -16,27 +17,42 @@
       border: 1px solid #ccc;
       border-radius: 8px;
     }
+    .gallery-item {
+      text-align: center;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    h1, h2 {
+      color: #333;
+    }
   </style>
 </head>
 <body>
   <h1>Dashboard - Processed Images</h1>
-  <h2>Upload a new processed image:</h2>
-<form action="/upload_image" method="post" enctype="multipart/form-data">
-  <input type="file" name="image" required>
-  <button type="submit">Upload</button>
-</form>
+
+  <h2>Upload a New Processed Image</h2>
+  <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data">
+    <input type="file" name="image" required>
+    <button type="submit">Upload</button>
+  </form>
+
   <div class="gallery">
-  {% for image in images %}
-    <div style="text-align: center;">
-      <a href="{{ image.url }}" target="_blank">
-        <img src="{{ image.url }}" alt="Processed Image">
-      </a>
-      <p>{{ image.project }}</p>
-    </div>
-    <p>Last updated at: {{ last_updated }}</p>
-  {% endfor %}
-</div>
+    {% for image in images %}
+      <div class="gallery-item">
+        <a href="{{ image.url }}" target="_blank">
+          <img src="{{ image.url }}" alt="Processed Image">
+        </a>
+        <p>Project: {{ image.project }}</p>
+        <p>Last updated: {{ last_updated }}</p>
+      </div>
+    {% else %}
+      <p>No images uploaded yet.</p>
+    {% endfor %}
+  </div>
+
   <br>
-  <a href="/">Upload Another Image</a>
+  <a href="{{ url_for('logout') }}">Logout</a>
 </body>
 </html>
