@@ -113,7 +113,7 @@ def create_app():
                 image_path = os.path.join(folder, filename)
                 image_file.save(image_path)
                 flash('Image uploaded!', 'success')
-                    return redirect(url_for('dashboard'))
+                return redirect(url_for('dashboard'))
         return render_template('upload.html')
 
     return app
