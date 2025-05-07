@@ -16,19 +16,20 @@ def create_app():
     db.init_app(app)
     migrate = Migrate(app, db)
 
+    # Login manager setup
     login_manager = LoginManager(app)
     login_manager.login_view = 'login'
 
     @login_manager.user_loader
     def load_user(user_id):
-        return User.query.get(int(user_id))  # ✅ Keep this inside the decorator
+        return User.query.get(int(user_id))
 
-    # HOME
+    # Home route redirects to dashboard
     @app.route('/')
     def home():
         return redirect(url_for('dashboard'))
 
-    # LOGIN
+    # Login route
     @app.route('/login', methods=['GET', 'POST'])
     def login():
         if request.method == 'POST':
@@ -44,13 +45,13 @@ def create_app():
                 flash('Invalid username or password.', 'danger')
         return render_template('login.html')
 
-    # DASHBOARD
+    # Dashboard
     @app.route('/dashboard')
     @login_required
     def dashboard():
         return f"Hello, {current_user.username}! Welcome to your dashboard."
 
-    # LOGOUT
+    # Logout
     @app.route('/logout')
     @login_required
     def logout():
@@ -58,14 +59,14 @@ def create_app():
         flash('You have been logged out.', 'success')
         return redirect(url_for('login'))
 
-    # PROJECTS LIST
+    # List projects
     @app.route('/projects')
     @login_required
     def projects():
         user_projects = Project.query.filter_by(user_id=current_user.id).all()
         return render_template('projects.html', projects=user_projects)
 
-    # CREATE PROJECT
+    # Create project
     @app.route('/projects/create', methods=['GET', 'POST'])
     @login_required
     def create_project():
@@ -79,7 +80,7 @@ def create_app():
             return redirect(url_for('projects'))
         return render_template('create_project.html')
 
-    # PROJECT DASHBOARD
+    # Project dashboard
     @app.route('/projects/<int:project_id>')
     @login_required
     def project_dashboard(project_id):
@@ -87,26 +88,25 @@ def create_app():
         images = Image.query.filter_by(project_id=project.id).all()
         return render_template('project_dashboard.html', project=project, images=images)
 
-    # UPLOAD IMAGE FOR PROJECT
+    # Upload image to project
     @app.route('/projects/<int:project_id>/upload', methods=['GET', 'POST'])
     @login_required
     def upload_image(project_id):
         project = Project.query.get_or_404(project_id)
-        if request.method == 'POST':
-            if 'image' in request.files:
-                image_file = request.files['image']
-                filename = secure_filename(image_file.filename)
-                folder = os.path.join(app.root_path, 'static', 'uploads', str(project_id))
-                os.makedirs(folder, exist_ok=True)
-                image_path = os.path.join(folder, filename)
-                image_file.save(image_path)
+        if request.method == 'POST' and 'image' in request.files:
+            image_file = request.files['image']
+            filename = secure_filename(image_file.filename)
+            folder = os.path.join(app.root_path, 'static', 'uploads', str(project_id))
+            os.makedirs(folder, exist_ok=True)
+            image_path = os.path.join(folder, filename)
+            image_file.save(image_path)
 
-                new_image = Image(filename=filename, project_id=project.id)
-                db.session.add(new_image)
-                db.session.commit()
+            new_image = Image(filename=filename, project_id=project.id)
+            db.session.add(new_image)
+            db.session.commit()
 
-                flash('Image uploaded!', 'success')
-                return redirect(url_for('project_dashboard', project_id=project_id))
+            flash('Image uploaded!', 'success')
+            return redirect(url_for('project_dashboard', project_id=project_id))
         return render_template('upload_image.html', project=project)
 
-    return app  # ✅ return app must be here at END of function
+    return app  # ✅ must be at the END of create_app
