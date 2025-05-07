@@ -20,10 +20,8 @@ def create_app():
     login_manager.login_view = 'login'
 
     @login_manager.user_loader
-        return app
-    
     def load_user(user_id):
-        return User.query.get(int(user_id))
+        return User.query.get(int(user_id))  # ✅ Keep this inside the decorator
 
     # HOME
     @app.route('/')
@@ -111,4 +109,4 @@ def create_app():
                 return redirect(url_for('project_dashboard', project_id=project_id))
         return render_template('upload_image.html', project=project)
 
-    return app
+    return app  # ✅ return app must be here at END of function
