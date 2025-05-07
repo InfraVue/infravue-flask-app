@@ -45,7 +45,7 @@
     {% if project.images %}
         <div class="image-grid">
             {% for image in project.images %}
-                <img src="{{ url_for('static', filename='uploads/' + str(project.id) + '/' + image.filename) }}" alt="Image {{ loop.index }}">
+                <img src="{{ url_for('static', filename='uploads/' ~ project.id ~ '/' ~ image.filename) }}" alt="Image {{ loop.index }}">            
             {% endfor %}
         </div>
     {% else %}
