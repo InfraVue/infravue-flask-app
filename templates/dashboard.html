@@ -1,63 +1,114 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{{ user.username }}'s Dashboard</title>
-    <link rel="stylesheet" href="/static/style.css">
-    <style>
-        .gallery { display: flex; flex-wrap: wrap; gap: 15px; }
-        .gallery img { width: 200px; height: auto; border: 1px solid #ccc; border-radius: 8px; }
-    </style>
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+    h1 {
+      text-align: center;
+    }
+    .form-section {
+      margin-bottom: 30px;
+    }
+    form {
+      margin: 10px 0;
+    }
+    input[type="text"], input[type="file"], select {
+      padding: 6px;
+      margin-right: 10px;
+    }
+    button {
+      padding: 6px 12px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .gallery {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      justify-content: center;
+    }
+    .image-box {
+      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 8px;
+      background: #fff;
+      text-align: center;
+      width: 240px;
+    }
+    .image-box img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 6px;
+    }
+    .image-actions {
+      margin-top: 10px;
+    }
+  </style>
 </head>
 <body>
-    <h1>Welcome, {{ user.username }}!</h1>
-    <p>Select a project to view or upload images:</p>
 
-    <!-- Project selection dropdown -->
-    <form action="{{ url_for('upload_image_for_dashboard') }}" method="post" enctype="multipart/form-data">
-        <label for="project_id">Choose Project:</label>
-        <select name="project_id" id="project_id" required>
-            {% for project in projects %}
-                <option value="{{ project.id }}">{{ project.name }}</option>
-            {% endfor %}
-        </select>
+  <h1>Welcome, {{ user.username }}!</h1>
+  <p style="text-align: center;">Select a project to view or upload images</p>
 
-        <input type="file" name="image" required>
-        <button type="submit">Upload Image</button>
-    </form>
-
-    <!-- Inline project creation -->
-    <h3>Create New Project</h3>
-    <form action="{{ url_for('create_project') }}" method="post">
-        <input type="text" name="name" placeholder="Project Name" required>
-        <input type="text" name="description" placeholder="Description">
-        <button type="submit">Create Project</button>
-    </form>
-
-    <h2>Uploaded Images</h2>
-    <div class="gallery">
-        {% for image in images %}
-            <div style="text-align: center;">
-                <a href="{{ url_for('static', filename='uploads/' ~ image.project_id ~ '/' ~ image.filename) }}" target="_blank">
-                    <img src="{{ url_for('static', filename='uploads/' ~ image.project_id ~ '/' ~ image.filename) }}" alt="{{ image.filename }}">
-                </a>
-                <p>{{ image.filename }} (Project ID: {{ image.project_id }})</p>
-
-                <!-- Edit form -->
-                <form action="{{ url_for('edit_image', image_id=image.id) }}" method="post" style="display:inline;">
-                    <input type="text" name="new_filename" placeholder="New filename" required>
-                    <button type="submit">Rename</button>
-                </form>
-
-                <!-- Delete form -->
-                <form action="{{ url_for('delete_image', image_id=image.id) }}" method="post" style="display:inline;">
-                    <button type="submit" onclick="return confirm('Are you sure you want to delete this image?')">Delete</button>
-                </form>
-            </div>
-        {% else %}
-            <p>No images uploaded yet.</p>
+  <div class="form-section" style="text-align: center;">
+    <form action="{{ url_for('upload_image_for_dashboard') }}" method="POST" enctype="multipart/form-data">
+      <label>Choose Project:</label>
+      <select name="project_id" required>
+        {% for project in projects %}
+          <option value="{{ project.id }}">{{ project.name }}</option>
         {% endfor %}
-    </div>
+      </select>
+      <input type="file" name="image" required>
+      <button type="submit">Upload Image</button>
+    </form>
+  </div>
 
-    <br><a href="{{ url_for('logout') }}">Logout</a>
+  <div class="form-section" style="text-align: center;">
+    <h3>Create New Project</h3>
+    <form action="{{ url_for('create_project') }}" method="POST">
+      <input type="text" name="name" placeholder="Project Name" required>
+      <input type="text" name="description" placeholder="Description">
+      <button type="submit">Create Project</button>
+    </form>
+  </div>
+
+  <h2 style="text-align: center;">Uploaded Images</h2>
+  <div class="gallery">
+    {% for image in images %}
+      <div class="image-box">
+        <a href="{{ url_for('static', filename='uploads/' ~ image.project_id ~ '/' ~ image.filename) }}" target="_blank">
+          <img src="{{ url_for('static', filename='uploads/' ~ image.project_id ~ '/' ~ image.filename) }}" alt="{{ image.filename }}">
+        </a>
+        <p>{{ image.filename }}<br><small>(Project ID: {{ image.project_id }})</small></p>
+
+        <div class="image-actions">
+          <form action="{{ url_for('rename_image', image_id=image.id) }}" method="POST" style="display:inline-block;">
+            <input type="text" name="new_filename" placeholder="New filename" required>
+            <button type="submit">Rename</button>
+          </form>
+
+          <form action="{{ url_for('delete_image', image_id=image.id) }}" method="POST" style="display:inline-block;">
+            <button type="submit" onclick="return confirm('Delete this image?')">Delete</button>
+          </form>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <br><br>
+  <p style="text-align: center;"><a href="{{ url_for('logout') }}">Logout</a></p>
+
 </body>
 </html>
