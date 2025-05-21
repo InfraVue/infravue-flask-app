@@ -17,7 +17,7 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
 # YOLO Model
-model = YOLO("yolov8n.pt")
+model = YOLO("models/yolov8n.pt")
 
 # Models
 class User(db.Model, UserMixin):
