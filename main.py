@@ -141,7 +141,7 @@ def run_ai(image_id):
     output_path = os.path.join(app.static_folder, 'uploads', str(image.project_id), output_filename)
 
     try:
-        model = YOLO("yolov8n.pt")  # or yolov8s.pt, etc.
+        model = YOLO("models/yolov8n.pt")  # or yolov8s.pt, etc.
         results = model(input_path)
         results[0].save(filename=output_path)
         flash("AI processing complete!", "success")
