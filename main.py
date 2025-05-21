@@ -126,6 +126,30 @@ def process_image_ai(image_id):
     flash("AI processing complete!")
     return redirect(url_for('dashboard'))
 
+@app.template_filter('file_exists')
+def file_exists_filter(filepath):
+    return os.path.exists(os.path.join(app.static_folder, filepath))
+
+@app.route('/run_ai/<int:image_id>', methods=['POST'])
+@login_required
+def run_ai(image_id):
+    image = Image.query.get_or_404(image_id)
+
+    # Define input/output paths
+    input_path = os.path.join(app.static_folder, 'uploads', str(image.project_id), image.filename)
+    output_filename = f"processed_{image.filename}"
+    output_path = os.path.join(app.static_folder, 'uploads', str(image.project_id), output_filename)
+
+    try:
+        model = YOLO("yolov8n.pt")  # or yolov8s.pt, etc.
+        results = model(input_path)
+        results[0].save(filename=output_path)
+        flash("AI processing complete!", "success")
+    except Exception as e:
+        flash(f"AI processing failed: {str(e)}", "danger")
+
+    return redirect(url_for('dashboard'))
+
 # Run app
 if __name__ == '__main__':
     with app.app_context():
